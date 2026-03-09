@@ -13,6 +13,9 @@ class Course extends Model
         if (empty($this->image)) {
             return '';
         }
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
         return asset('uploads/course/' . $this->image);
     }
 
