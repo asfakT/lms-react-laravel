@@ -1,0 +1,99 @@
+import React, { useEffect, useState } from 'react'
+import Modal from 'react-bootstrap/Modal';
+import { useForm } from 'react-hook-form'
+import { apiUrl, getToken } from '../../../common/Config'
+import toast from 'react-hot-toast'
+
+const UpdateRequirement = ({
+    requirementData,
+    showRequirement,
+    handleClose,
+    requirements,
+    setRequirements
+}) => {
+
+    const [loading, setLoading] = useState(false);
+    const { handleSubmit, register, formState: { errors }, reset } = useForm();
+    const token = getToken();
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+
+        await fetch(`${apiUrl}/requirements/${requirementData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                setLoading(false);
+                if (result.status == 200) {
+
+                    const updatedRequirements = requirements.map(requirement =>
+                        requirement.id === result.data.id
+                            ? { ...requirement, text: result.data.text }
+                            : requirement
+                    );
+
+                    setRequirements(updatedRequirements);
+                    toast.success(result.message);
+                    handleClose();
+                }
+                else {
+                    console.log("Something went wrong");
+                }
+            })
+    }
+
+    useEffect(() => {
+        if (requirementData) {
+            reset({
+                requirement: requirementData.text
+            })
+        }
+    }, [requirementData, reset])
+
+    return (
+        <>
+            <Modal size='lg' show={showRequirement} onHide={handleClose} animation={false}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Update Requirement</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <div className='mb-3'>
+                            <label className='title'>Requirement</label>
+                            <input
+                                {
+                                ...register('requirement', {
+                                    required: "The requirement field is required."
+                                })
+                                }
+                                type="text"
+                                className={`form-control ${errors.requirement && 'is-invalid'}`}
+                                placeholder='Requirement'
+                            />
+                            {
+                                errors.requirement &&
+                                <p className='invalid-feedback'>{errors.requirement.message}</p>
+                            }
+                        </div>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <button className='btn btn-primary' disabled={loading}>
+                            {loading ? 'Please wait...' : 'Save'}
+                        </button>
+                    </Modal.Footer>
+                </form>
+            </Modal>
+        </>
+    )
+}
+
+export default UpdateRequirement

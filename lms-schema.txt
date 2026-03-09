@@ -1,0 +1,233 @@
+npm install react-bootstrap bootstrap
+npm i react-router-dom react-hook-form react-hot-toast react-icons react-simple-star-rating react-player
+npm i jodit-react @hello-pangea/dnd react-filepond filepond
+npm i filepond-plugin-image-exif-orientation filepond-plugin-image-preview filepond-plugin-file-validate-type
+npm i -D sass-embedded
+
+
+npm create vite@latest lms-frontend
+cd lms-frontend
+npm install
+npm run dev
+
+
+src/
+  pages/
+    Home.jsx
+    Courses.jsx
+    CourseDetail.jsx
+    Login.jsx
+    Register.jsx
+    Checkout.jsx
+    MyCourses.jsx
+    EnrolledCourses.jsx
+    WatchCourse.jsx
+    ChangePassword.jsx
+
+  components/
+    Navbar.jsx
+    ProtectedRoute.jsx
+
+  services/
+    api.js
+
+  styles/
+    main.scss
+
+
+
+
+
+php artisan serve
+php artisan make:model
+
+
+User
+ ├─ Courses (Instructor)
+ ├─ Enrollments
+ ├─ Reviews
+ └─ Activities
+
+Course
+ ├─ Categories
+ ├─ Levels
+ ├─ Languages
+ ├─ Chapters → Lessons
+ ├─ Outcomes
+ ├─ Requirements
+ ├─ Reviews
+ └─ Enrollments
+
+
+
+==============================
+LMS DATABASE TABLE SUMMARY
+==============================
+
+--------------------------------
+TABLE: categories
+--------------------------------
+id              - Primary key
+name            - Category name
+status          - 1 = active, 0 = inactive
+created_at      - Created time
+updated_at      - Updated time
+
+Purpose:
+Used to group courses (Web, Design, Business etc.)
+
+--------------------------------
+TABLE: languages
+--------------------------------
+id
+name            - Language name
+status          - Active / inactive
+created_at
+updated_at
+
+Purpose:
+Defines course language (English, Bangla etc.)
+
+--------------------------------
+TABLE: levels
+--------------------------------
+id
+name            - Beginner / Intermediate / Advanced
+status
+created_at
+updated_at
+
+Purpose:
+Defines course difficulty level
+
+--------------------------------
+TABLE: courses
+--------------------------------
+id
+title           - Course title
+user_id         - Instructor (users table)
+category_id     - Course category
+level_id        - Course level
+language_id     - Course language
+description     - Course overview
+price           - Course price
+cross_price     - Old price (discount)
+status          - 0 = draft, 1 = published
+is_featured     - yes / no
+image           - Course thumbnail
+created_at
+updated_at
+
+Purpose:
+Main course entity for LMS
+
+--------------------------------
+TABLE: outcomes
+--------------------------------
+id
+course_id       - Related course
+text            - Learning outcome
+sort_order      - Display order
+created_at
+updated_at
+
+Purpose:
+Shows what student will learn from the course
+
+--------------------------------
+TABLE: requirements
+--------------------------------
+id
+course_id
+text            - Course prerequisite
+sort_order
+created_at
+updated_at
+
+Purpose:
+Shows what student needs before enrolling
+
+--------------------------------
+TABLE: chapters
+--------------------------------
+id
+title           - Chapter title
+course_id
+sort_order
+status           - Active / inactive
+created_at
+updated_at
+
+Purpose:
+Splits course into sections
+
+--------------------------------
+TABLE: lessons
+--------------------------------
+id
+title           - Lesson title
+chapter_id
+is_free_preview - yes / no
+duration        - Video duration
+video           - Video URL or path
+description
+sort_order
+status
+created_at
+updated_at
+
+Purpose:
+Actual learning content (video/text)
+
+--------------------------------
+TABLE: enrollments
+--------------------------------
+id
+user_id         - Student
+course_id       - Enrolled course
+created_at
+updated_at
+
+Purpose:
+Tracks which user enrolled in which course
+
+--------------------------------
+TABLE: activities
+--------------------------------
+id
+course_id
+user_id
+chapter_id
+lesson_id
+is_completed    - yes / no
+is_last_watched - yes / no
+created_at
+updated_at
+
+Purpose:
+Tracks student progress and resume learning
+
+--------------------------------
+TABLE: reviews
+--------------------------------
+id
+user_id         - Reviewer
+course_id
+rating          - 1 to 5
+comment          - Review text
+status           - 0 = pending, 1 = approved
+created_at
+updated_at
+
+Purpose:
+Course rating and feedback system
+
+--------------------------------
+RELATION OVERVIEW (SHORT)
+--------------------------------
+User -> Courses, Enrollments, Reviews, Activities
+Course -> Categories, Levels, Languages
+Course -> Chapters -> Lessons
+Course -> Outcomes, Requirements, Reviews
+Enrollment -> User + Course
+Activity -> User + Course + Chapter + Lesson
